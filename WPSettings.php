@@ -30,9 +30,14 @@ class WPSettings{
 			add_settings_section($s, $section['title'],
 					array(&$this, 'sectionText'), $this->id);
 			foreach ($section['fields'] as $f => &$field) {
+				if ($field['type'] == 'internal' ) {
+					register_setting($this->id, $f);
+					continue;
+				} else {
+					register_setting($this->id, $f); /// @todo , array(&$this, 'checkValue'));
+				}
 				add_settings_field($f, $field['title'],
 						array(&$this, 'fieldText'), $this->id, $s, array($f, $field));
-				register_setting($this->id, $f); /// @todo , array(&$this, 'checkValue'));
 			}
 		}
 	}
@@ -63,6 +68,16 @@ class WPSettings{
 			default:
 				return get_option($option, $default);
 		}
+	}
+
+	function update_option($option, $new_value) {
+		if (isset($this->fields[$option])) {
+			update_option($option, $new_value);
+		} else {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
