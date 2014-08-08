@@ -59,6 +59,7 @@ class WPSettings{
 			return false;
 		}
 		
+		return get_option($option, $default);
 		/** @todo Need to test that the type index is set
 		switch($this->fields[$option]['type']) {
 			case 'dimension':
