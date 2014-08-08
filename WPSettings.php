@@ -14,7 +14,7 @@ class WPSettings{
 		
 		foreach ($this->settings['settings'] as $s => &$section) {
 			foreach ($section['fields'] as $f => &$field) {
-				$this->fields[$f][] =& $field;
+				$this->fields[$f] =& $field;
 			}
 		}
 
@@ -58,7 +58,8 @@ class WPSettings{
 		} else {
 			return false;
 		}
-
+		
+		/** @todo Need to test that the type index is set
 		switch($this->fields[$option]['type']) {
 			case 'dimension':
 				return array(
@@ -67,7 +68,7 @@ class WPSettings{
 				);
 			default:
 				return get_option($option, $default);
-		}
+		}*/
 	}
 
 	function update_option($option, $new_value) {
@@ -105,9 +106,9 @@ class WPSettings{
 		echo '</div>';
 	}
 
-	function sectionText($id) {
-		if (isset($this->settings['settings'][$id[0]]['description'])) {
-			echo '<p>' . $this->settings['settings'][$id[0]]['description'] . '</p>';
+	function sectionText($args) {
+		if (isset($this->settings['settings'][$args['id']]['description'])) {
+			echo '<p>' . $this->settings['settings'][$args['id']]['description'] . '</p>';
 		}
 	}
 
@@ -119,7 +120,7 @@ class WPSettings{
 		switch ($field['type']) {
 			case 'boolean':
 				echo '<input type="checkbox" id="' . $f . '" name="' . $f . '"'
-						. (get_option($f, $field['default']) ? checked : '') . ' \>';
+						. (get_option($f, $field['default']) ? 'checked' : '') . ' \>';
 				if (isset($field['label'])) {
 					echo '<label for="' . $f . '">' . $field['label'] . '</label>';
 				}
