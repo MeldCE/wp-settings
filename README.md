@@ -3,7 +3,25 @@ wp-settings
 
 An easy way to have your settings managed for you in Wordpress.
 
-This class can draw a Options page for setting your settings and provides get and set functions (built on top of the Wordpress get and set functions) for setting and getting your settings. You simply provide an array containing your settings and away you go.
+This class can draw a Options page for setting your settings and provides get
+and set functions (built on top of the Wordpress get and set functions) for
+setting and getting your settings. You simply provide an array containing your
+settings and away you go.
+
+You can get or set the value of any option as if it was a variable of the
+class. For example:
+
+```
+$settings = WPSettings($options);
+// Get option value
+echo $settings->my_option;
+// Set option value
+$settings->my_option = 'new value';
+```
+
+If the option `prefix` is set, the prefix will be prefixed to the start of the
+variable name used when getting or setting this way, e.g. if `prefix` is set to
+`gh_`, the above example would get and set the option `gh_my_option`.
 
 ## Settings Array
 
@@ -12,6 +30,7 @@ Below is an example (from wp-gallery-hierarchy) of what an settings array should
 $options = array(
     'title' => __('Gallery Hierarchy Options', 'gallery_hierarchy'), // The title of your options page
     'id' => 'gHOptions', // The section and other ids for the settings
+		'prefix' => 'gh_', // If set, it will prefixed to any option accessed or set as a variable
     'settings' => array( // The array containing the settings sections
 		    'gHFolders' => array( // A settings section
 				    'title' => __('Folder Options', 'gallery_hierarchy'), // The title of the settings section

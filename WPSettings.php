@@ -7,10 +7,15 @@ class WPSettings{
 	protected $settings;
 	protected $id;
 	protected $fields;
+	protected $prefix = '';
 
 	function __construct(&$settings) {
 		$this->settings = $settings;
 		$this->id = $settings['id'];
+
+		if (isset($this->settings['prefix']) && $this->settings['prefix']) {
+			$this->prefix = $this->settings['prefix'];
+		}
 		
 		foreach ($this->settings['settings'] as $s => &$section) {
 			foreach ($section['fields'] as $f => &$field) {
@@ -71,6 +76,9 @@ class WPSettings{
 				return get_option($option, $default);
 		}*/
 	}
+	function __get($option) {
+		return $this->get_option($this->prefix . $option);
+	}
 
 	function update_option($option, $new_value) {
 		if (isset($this->fields[$option])) {
@@ -80,6 +88,9 @@ class WPSettings{
 		}
 
 		return true;
+	}
+	function __set($option, $new_value) {
+		$this->update_option($this->prefix . $option, $new_value);
 	}
 
 	/**
