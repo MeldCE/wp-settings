@@ -138,20 +138,30 @@ class WPSettings{
 				}
 				break;
 			case 'dimensions':
-				if (isset($field['default'])) {
-					$w = $field['default'][0];
-					$h = $field['default'][1];
-				} else {
-					$w = '';
-					$h = '';
+				if (!($dim = get_option($f))) {
+					if (isset($field['default'])) {
+						if (isset($field['default']['width'])) {
+							$dim = $field['default'];
+						} else {
+							$dim = array(
+									'width' => $field['default'][0],
+									'height' => $field['default'][1]
+							);
+						}
+					} else {
+						$dim = array(
+								'width' => '',
+								'height' => ''
+						);
+					}
 				}
 
 				echo __('Width', 'ghsettings') . ': <input type="number" '
 						. 'id="' . $f . 'width" name="' . $f . '[width]" '
-						. 'value="' . get_option($f . '_w', $w) . '" />px  '
+						. 'value="' . $dim['width'] . '" />px  '
 						. __('Height', 'ghsettings') . ': <input type="number" '
 						. 'id="' . $f . 'height" name="' . $f . '[height]" '
-						. 'value="' . get_option($f . '_h', $h) . '" />px';
+						. 'value="' . $dim['height'] . '" />px';
 				break;
 			case 'select':
 				echo '<select id="' . $f . '" name="' . $f . '">';
