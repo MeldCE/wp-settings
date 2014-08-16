@@ -69,6 +69,8 @@ if (!class_exists('WPSettings')) {
 		 * @retval false If option is not set
 		 */
 		function get_option($option) {
+			$option = $this->prefix . $option;
+			
 			$default = null;
 			if (isset($this->fields[$option])) {
 				if (isset($this->fields[$option]['default'])) {
@@ -91,10 +93,12 @@ if (!class_exists('WPSettings')) {
 			}*/
 		}
 		function __get($option) {
-			return $this->get_option($this->prefix . $option);
+			return $this->get_option($option);
 		}
 
 		function update_option($option, $new_value) {
+			$option = $this->prefix . $option;
+
 			if (isset($this->fields[$option])) {
 				update_option($option, $new_value);
 			} else {
@@ -104,7 +108,7 @@ if (!class_exists('WPSettings')) {
 			return true;
 		}
 		function __set($option, $new_value) {
-			$this->update_option($this->prefix . $option, $new_value);
+			$this->update_option($option, $new_value);
 		}
 
 		/**
