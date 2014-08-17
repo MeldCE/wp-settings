@@ -67,6 +67,8 @@ following options (*bold* options are required):
 - `'description'` - A description of the setting. Will be placed below the
   field.
 - `'type'` - The type of setting. Can be either:
+	- `'internal'` - Only for internal use - won't be added to the edit options
+	  screen.
   - `'folder'` - A folder.
 	- `'text'` - A text field.
 	- `'number'` - A number.
