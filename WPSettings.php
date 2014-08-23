@@ -352,7 +352,7 @@ if (!class_exists('WPSettings')) {
 							. (isset($field['label']) ? ($v != $selected
 							? 'style="display: none"' : '') : '')
 							. ' class="form-table">';
-					echo $this->multipleFieldText(array($f, $id), $field['fields'], 
+					echo $this->multipleFieldText(array($f, $v), $field['fields'], 
 							(($val && is_array($val)) ? $val : null));
 					echo '<tr><td colspan="2"><a class="button" '
 							. 'onclick="wps.multiple.del(\'' . $id . '\', \'' . $v . '\');">'
