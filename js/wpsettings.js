@@ -52,7 +52,13 @@ var wps = (function () {
 
 					m[id]['div'].append(html);
 				}
-			}
+			},
+
+			del: function(id, iId) {
+				if (m[id]) {
+					$('#' + id + '-' + iId).remove();
+				}
+			},
 		}
 
 

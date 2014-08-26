@@ -259,7 +259,7 @@ if (!class_exists('WPSettings')) {
 							. '\');</script>';
 					break;
 				case 'multiple':
-					$this->multipleField($f, $field, $value);
+					$html .= $this->multipleField($f, $field, $value);
 
 					break;
 				case 'folder':
@@ -315,71 +315,93 @@ if (!class_exists('WPSettings')) {
 			return join('-', $parts);
 		}
 
+		protected function addPart($currentPart, $newPart) {
+			if (!is_array($currentPart)) {
+				$currentPart = array($currentPart);
+			}
+
+			if (is_array($newPart)) {
+				return array_merge($currentPart, $newPart);
+			} else {
+				$currentPart[] = $newPart;
+				return $currentPart;
+			}
+		}
+
 		protected function multipleField($f, &$field, $value) {
+			$html = '';
+
 			if (isset($field['description'])) {
-				echo '<p class="description">' . $field['description'] . '</p>';
+				$html .= '<p class="description">' . $field['description'] . '</p>';
 			}
 
 			if (!(isset($field['multiple']) && $field['multiple'])) {
-				echo '<table class="form-table">';
-				echo $this->multipleFieldText($f, $field['fields'], 
+				$html .= '<table class="form-table">';
+				$html .= $this->multipleFieldText($f, $field['fields'], 
 						(($value && is_array($value)) ? $value : array()));
-				echo '</table>';
+				$html .= '</table>';
 			} else {
 				if (!($value && is_array($value))) { // If multiple & have values
-					$value = array(uniqid() => array());
+					$value = array();
 				}
 
 				$id = uniqid();
 				$selected = false;
 				if (isset($field['label'])) {
-					echo '<select id="' . $id . 'select">';
+					$html .= '<select id="' . $id . 'select">';
 					foreach ($value as $v => &$val) {
-						echo '<option value="' . $v . '"'
+						$html .= '<option value="' . $v . '"'
 								. (!$selected ? ' checked' : '') . '>' . $val[$field['label']]
 								. '</option>';
 						if (!$selected) {
 							$selected = $v;
 						}
 					}
-					echo '</select>';
+					$html .= '</select>';
 				}
 
-				echo '<div id="' . $id . '">';
+				$html .= '<div id="' . $id . '">';
 				// @todo Generate labels and divs
 				foreach ($value as $v => &$val) {
-					echo '<table id="' . $id . '-' . $v . '"'
+					$html .= '<table id="' . $id . '-' . $v . '"'
 							. (isset($field['label']) ? ($v != $selected
 							? 'style="display: none"' : '') : '')
 							. ' class="form-table">';
-					echo $this->multipleFieldText(array($f, $v), $field['fields'], 
+					$html .= $this->multipleFieldText($this->addPart($f, $v), $field['fields'], 
 							(($val && is_array($val)) ? $val : null));
-					echo '<tr><td colspan="2"><a class="button" '
+					$html .= '<tr><td colspan="2"><a class="button" '
 							. 'onclick="wps.multiple.del(\'' . $id . '\', \'' . $v . '\');">'
 							. __('Delete', 'wpsettings') . '</a>';
-					echo '</td></tr>';
-					echo '</table>';
+					$html .= '</td></tr>';
+					$html .= '</table>';
 				}
+				$html .= '</div>';
 
 				// Generate blank HTML
 				$blank = '<table id="' . $id . '-%id%"'
 						. ' class="form-table">';
-				$blank .= $this->multipleFieldText(array($f, '%id%'), $field['fields']);
+				$blank .= $this->multipleFieldText($this->addPart($f, '%id%'), $field['fields']);
 				$blank .= '<tr><td colspan="2"><a class="button" '
 						. 'onclick="wps.multiple.del(\'' . $id . '\', \'%id%\');">'
 						. __('Delete', 'wpsettings') . '</a>';
 				$blank .= '</td></tr>';
 				$blank .= '</table>';
+				$blank = str_replace('\\', '\\\\', $blank);
 				$blank = str_replace('\'', '\\\'', $blank);
-				//$blank = preg_replace('/([\'"])/', '\\\\$1', $blank);
+				$blank = str_replace('</script>', '</scr\' + \'ipt>', $blank);
+				$blank = str_replace('<script type="text/javascript">', '<scr\' + \'ipt type="text/javascript">', $blank);
+				//$blank = preg_replace('/(\\*)([\'"])/', '$1$1\\\\$2', $blank);
+				//$blank = preg_replace('/([\\]*)([\'"])/', '$1$1\\\\$2', $blank);
 
 				
-				echo '</div>';
-				echo '<a class="button" onclick="wps.multiple.add(\'' . $id . '\');">'
+				$html .= '</div>';
+				$html .= '<a class="button" onclick="wps.multiple.add(\'' . $id . '\');">'
 						. __('Add another', 'wpsettings') . '</a>';
-				echo '<script type="text/javascript">wps.multiple.init(\'' . $id
+				$html .= '<script type="text/javascript">wps.multiple.init(\'' . $id
 						. '\', \'' . $blank . '\');</script>';
 			}
+			
+			return $html;
 		}
 
 		/**
