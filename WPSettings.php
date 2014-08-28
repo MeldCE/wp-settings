@@ -395,9 +395,6 @@ if (!class_exists('WPSettings')) {
 				$blank = str_replace('\'', '\\\'', $blank);
 				$blank = str_replace('</script>', '</scr\' + \'ipt>', $blank);
 				$blank = str_replace('<script type="text/javascript">', '<scr\' + \'ipt type="text/javascript">', $blank);
-				//$blank = preg_replace('/(\\*)([\'"])/', '$1$1\\\\$2', $blank);
-				//$blank = preg_replace('/([\\]*)([\'"])/', '$1$1\\\\$2', $blank);
-
 				
 				$html .= '</div>';
 				$html .= '<a class="button" onclick="wps.multiple.add(\'' . $id . '\');">'
