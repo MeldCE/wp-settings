@@ -11,7 +11,7 @@ if (!class_exists('WPSettings')) {
 		protected $prefix = '';
 
 		function __construct(&$settings) {
-			$this->settings = $settings;
+			$this->settings =& $settings;
 			$this->id = $settings['id'];
 
 			$p = (isset($this->settings['prefix']) ? $this->settings['prefix'] : '');
@@ -260,6 +260,11 @@ if (!class_exists('WPSettings')) {
 					break;
 				case 'multiple':
 					$html .= $this->multipleField($f, $field, $value);
+
+					break;
+				case 'formatted':
+					$html .= wp_editor($value, $this->id($f),
+							array( 'textarea_name' => $this->name($f)));
 
 					break;
 				case 'folder':

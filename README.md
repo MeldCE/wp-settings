@@ -71,6 +71,7 @@ following options (*bold* options are required):
 	  screen.
   - `'folder'` - A folder.
 	- `'text'` - A text field.
+	- `'formatted'` - A large, formatted text field.
 	- `'number'` - A number.
 	- `'boolean'` - True or false (a checkbox).
 	- `'select'` - One (**or more**) of the given options (see below).
