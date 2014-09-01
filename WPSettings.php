@@ -41,8 +41,13 @@ if (!class_exists('WPSettings')) {
 				add_settings_section($s, $section['title'],
 						array(&$this, 'sectionText'), $this->id);
 				foreach ($section['fields'] as $f => &$field) {
+					/** @todo Add error alert
+					if (!isset($field['type'])) {
+						echo 'Type not set for ' . $f . ' ' . print_r($field, 1);
+					}
+					*/
 					if ($field['type'] == 'internal' ) {
-						register_setting($this->id, $p . $f);
+						register_setting($this->id . '_internal', $p . $f);
 						continue;
 					} else {
 						register_setting($this->id, $p . $f); /// @todo , array(&$this, 'checkValue'));
