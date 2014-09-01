@@ -22,9 +22,9 @@ core: $(coreFiles)
 js: minifyjs
 
 # Minifying Files
-minify: minifyjs
+minify: minifyjs minifycss
 
-clean-minify: clean-minifyjs
+clean-minify: clean-minifyjs clean-minifycss
 
 # Javscript Files
 JSFiles = js/wpsettings.min.js
@@ -35,6 +35,16 @@ clean-minifyjs:
 
 js/wpsettings.min.js: js/wpsettings.js
 	minify js/wpsettings.js > js/wpsettings.min.js
+
+# Javscript Files
+CSSFiles = css/wpsettings.min.css
+minifycss: $(CSSFiles)
+
+clean-minifycss:
+	rm -f $(CSSFiles)
+
+css/wpsettings.min.css: css/wpsettings.css
+	minify css/wpsettings.css > css/wpsettings.min.css
 
 Files = $(JSFiles) $(coreFiles)
 
