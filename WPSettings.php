@@ -51,6 +51,8 @@ if (!class_exists('WPSettings')) {
 							array(&$this, 'fieldText'), $this->id, $s, array($p . $f, $field));
 				}
 			}
+
+			add_action('admin_enqueue_scripts', array($this, 'enqueueScripts'));
 		}
 
 		function enqueueScripts() {
@@ -129,11 +131,55 @@ if (!class_exists('WPSettings')) {
 			}
 			echo '<form action="options.php" method="post" id="gHierarchy">';
 			submit_button();
+			if (isset($this->settings['useTabs']) && $this->settings['useTabs']) {
+				foreach ($this->settings['settings'] as $s => &$section) {
+					echo '<a class="wp-settings-tab" id="' . $this->id . '-' . $s
+							. '-tab" onclick="wps.tabs.open(\'' . $this->id
+							. '\', \'' . $s . '\')">' . $section['title']
+							. '</a>';
+				}
+			}
 			settings_fields($this->id);
-			do_settings_sections($this->id);
+			$this->do_settings_sections($this->id);
 			submit_button();
+			echo '<script>wps.tabs.init(\'' . $this->id . '\''
+					. (isset($_REQUEST['section']) ? ', \'' 
+					. $_REQUEST['section'] . '\'' : '') . ');</script>';
 			echo '</form>';
 			echo '</div>';
+		}
+
+		protected function do_settings_sections($page) {
+			global $wp_settings_sections, $wp_settings_fields;
+
+			if (!isset($wp_settings_sections[$page])) {
+				return;
+			}
+
+			foreach ((array)$wp_settings_sections[$page] as $s => &$section) {
+				if (isset($this->settings['useTabs']) && $this->settings['useTabs']) {
+					echo '<div class="' . $this->id . '-section wp-settings-section" id="' . $this->id . '-' . $s . '">';
+				}
+
+				if ( $section['title'] )
+						echo "<h3>{$section['title']}</h3>\n";
+
+				if ( $section['callback'] )
+						call_user_func( $section['callback'], $section );
+
+				if ( ! isset( $wp_settings_fields )
+						|| !isset( $wp_settings_fields[$page] )
+						|| !isset( $wp_settings_fields[$page][$section['id']] ) )
+					continue;
+				
+				echo '<table class="form-table">';
+				do_settings_fields( $page, $section['id'] );
+				echo '</table>';
+				
+				if (isset($this->settings['useTabs']) && $this->settings['useTabs']) {
+					echo '</div>';
+				}
+			}
 		}
 
 		function sectionText($args) {

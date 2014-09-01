@@ -47,6 +47,7 @@ The following options are available (*bold* options are required):
   name.
 - `'settings'` - *The associative array containing the settings broken into
   sections*.
+- `'useTabs'` - If true, each section will be separated into its own tab.
 
 ### Sections (`$options['settings']`)
 
