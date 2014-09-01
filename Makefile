@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-version = 0.1-beta-fancybox
+version = 0.5
 
 name = wp-settings
 
@@ -10,6 +10,7 @@ all: release
 
 clean: clean-minify clean-release
 
+release: $(name).$(version).zip $(name).$(version).tgz
 
 clean-release:
 	rm -f $(name).zip
@@ -36,6 +37,8 @@ clean-minifyjs:
 js/wpsettings.min.js: js/wpsettings.js
 	minify js/wpsettings.js > js/wpsettings.min.js
 
+css: minifycss
+
 # Javscript Files
 CSSFiles = css/wpsettings.min.css
 minifycss: $(CSSFiles)
@@ -46,14 +49,14 @@ clean-minifycss:
 css/wpsettings.min.css: css/wpsettings.css
 	minify css/wpsettings.css > css/wpsettings.min.css
 
-Files = $(JSFiles) $(coreFiles)
+Files = $(JSFiles) $(CSSFiles) $(coreFiles)
 
 # Building the release file
 $(name):
 	ln -s . $(name)
 
-$(name).$(version).zip: $(name) core albums css js submodules
+$(name).$(version).zip: $(name) core css js
 	zip -X $(name).$(version).zip $(addprefix $(name)/,$(Files))
 
-$(name)-hierarchy.$(version).tgz: $(name) core albums css js submodules
+$(name).$(version).tgz: $(name) core css js
 	tar -czf $(name).$(version).tgz $(addprefix $(name)/,$(Files))
