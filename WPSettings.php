@@ -157,11 +157,11 @@ if (!class_exists('WPSettings')) {
 		protected function do_settings_sections($page) {
 			global $wp_settings_sections, $wp_settings_fields;
 
-			if (!isset($wp_settings_sections[$page])) {
+			if (!isset($wp_settings_sections[$page]) || !is_array($wp_settings_sections[$page])) {
 				return;
 			}
 
-			foreach ((array)$wp_settings_sections[$page] as $s => &$section) {
+			foreach ($wp_settings_sections[$page] as $s => &$section) {
 				if (isset($this->settings['useTabs']) && $this->settings['useTabs']) {
 					echo '<div class="' . $this->id . '-section wp-settings-section" id="' . $this->id . '-' . $s . '">';
 				}
