@@ -50,7 +50,42 @@ if (!class_exists('WPSettings')) {
 						register_setting($this->id . '_internal', $p . $f);
 						continue;
 					} else {
-						register_setting($this->id, $p . $f); /// @todo , array(&$this, 'checkValue'));
+						if (isset($field['check'])) {
+							$sanitize = $field['check'];
+						} else {
+							switch($field['type']) {
+								case 'boolean':
+									$sanitize = array(&$this, 'sanitizeBoolean');
+									break;
+								case 'dimensions':
+									$sanitize = array(&$this, 'sanitizeDimension');
+									break;
+								/*case 'select':
+									$sanitize = array(&$this, 'sanitizeSelect');
+									break;
+								case 'selectMultiple':
+									$sanitize = array(&$this, 'sanitize');
+									break;
+								case 'multiple':
+									$sanitize = array(&$this, 'sanitize');
+									break;
+								case 'formatted':
+									$sanitize = array(&$this, 'sanitize');
+									break;
+								case 'folder':
+									$sanitize = array(&$this, 'sanitize');
+									break;
+								case '':
+									$sanitize = array(&$this, 'sanitize');
+									break;*/
+								case 'number':
+									$sanitize = 'intval';
+									break;
+								default:
+									$sanitize = '';
+							}
+						}
+						register_setting($this->id, $p . $f, $sanitize);
 					}
 					add_settings_field($p . $f, $field['title'],
 							array(&$this, 'fieldText'), $this->id, $s, array($p . $f, $field));
@@ -87,7 +122,15 @@ if (!class_exists('WPSettings')) {
 				return false;
 			}
 			
+			if (isset($field['get'])) {
+				if (is_null(($value = call_user_func($field['get'], $field)))) {
+					return $default;
+				}
+				return value;
+			}
+
 			return get_option($option, $default);
+
 			/** @todo Need to test that the type index is set
 			switch($this->fields[$option]['type']) {
 				case 'dimension':
@@ -209,6 +252,8 @@ if (!class_exists('WPSettings')) {
 		 * @param $value mixed The current value of the field.
 		 * @param $default mixed The default value of the field.
 		 * @return string The generated HTML.
+		 *
+		 * @todo Implement value verification.
 		 */
 		protected function generateFieldText($args, $value = null, $default = null) {
 			$html = '';
@@ -223,6 +268,10 @@ if (!class_exists('WPSettings')) {
 				} else {
 					$default = false;
 				}
+			}
+		
+			if (isset($field['get'])) {
+				$value = call_user_func($field['get'], $field);
 			}
 
 			if (is_null($value)) {
@@ -245,7 +294,7 @@ if (!class_exists('WPSettings')) {
 							if (isset($default['width'])) {
 								$value = $default;
 							} else {
-								$valie = array(
+								$value = array(
 										'width' => $default[0],
 										'height' => $default[1]
 								);
@@ -266,12 +315,30 @@ if (!class_exists('WPSettings')) {
 							. 'value="' . $value['height'] . '" />px';
 					break;
 				case 'select':
-					$html .= '<select id="' . $this->id($f) . '" name="' . $this->name($f) . '">';
+					if (isset($field['multiple']) && $field['multiple']) {
+						$multiple = true;
+					} else {
+						$multiple = false;
+					}
+
+					if ($multiple && !is_array($value)) {
+						if ($value) {
+							$value = array($value);
+						} else {
+							$value = array();
+						}
+					}
+
+					$html .= '<select id="' . $this->id($f) . '" name="'
+							. $this->name($f) . ($multiple ? '[]' : '') . '"'
+							. ((isset($field['multiple']) 
+							&& $field['multiple']) ? ' multiple' : '') . '>';
 					if (isset($field['values'])) {
 						foreach ($field['values'] as $v => $val) {
 							$html .= '<option value="' . $v . '"'
-									. ($v == $value ? ' selected' : '') . '>' . $val
-									. '</option>';
+									. ((($multiple && in_array($v, $value))
+									|| (!$multiple && $v == $value)) ? ' selected' : '') . '>'
+									. $val . '</option>';
 						}
 					}
 					$html .= '</select>';
@@ -483,8 +550,21 @@ if (!class_exists('WPSettings')) {
 			return $html;
 		}
 
-		function checkValue() {
+		function sanitizeBoolean($value) {
+			if ($value) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 
+		function sanitizeDimension($value) {
+			if (isset($value['width']) && isset($value['height'])) {
+				$value['width'] = intval($value['width']) || 0;
+				$value['height'] = intval($value['height']) || 0;
+			}
+
+			return null;
 		}
 	}
 }

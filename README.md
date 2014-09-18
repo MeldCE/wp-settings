@@ -102,10 +102,13 @@ following options (*bold* options are required):
 	`'selectMultiple'`, *must contain an array like `$options['settings']`. The
 	fields in `$options['settings'][$value]['fields']` will be displayed if
 	`$value` is selected.
-- '`label`' - If `'type'` is `'multiple'` and `'multiple'` is set to true,
+- `'label'` - If `'type'` is `'multiple'` and `'multiple'` is set to true,
   if this is set, one group will be visible at one time and the user will
   be able to switch between them using a select box. The value *must a key of
 	one of the fields in `'fields'` to be used as the label to groups of fields*.
+- `'check'` - Function to be used to sanitize to value submitted. Will be
+  passed the value as a single argument and should return the sanitised value.
+- `'get'` - Function to be used to get the current value of the option.
 
 ### `$options` Array Example
 
