@@ -68,6 +68,23 @@ if (!class_exists('WPSettings')) {
 					plugins_url('/' . $dir . '/css/wpsettings.min.css')); // , __DIR__));
 		}
 
+		protected function formatDimension($dimension) {
+			if (is_array($dimension)) {
+				if (isset($dimension['width']) && isset($dimension)) {
+					return $dimension;
+				}
+
+				if (isset($dimension[0]) && isset($dimension[1])) {
+					return array(
+						'width' => $dimension[0],
+						'height' => $dimension[1]
+					);
+				}
+			}
+
+			return null;
+		}
+
 		/**
 		 * Uses the get_option function to retrieve a value of a setting, returning
 		 * the default value if not set.
@@ -76,29 +93,27 @@ if (!class_exists('WPSettings')) {
 		 * @retval false If option is not set
 		 */
 		function get_option($option) {
-			$option = $this->prefix . $option;
+			$pOption = $this->prefix . $option;
 			
 			$default = null;
-			if (isset($this->fields[$option])) {
-				if (isset($this->fields[$option]['default'])) {
-					$default = $this->fields[$option]['default'];
-				}
-			} else {
-				return false;
+			if (!isset($this->fields[$option])) {
+				return null;
+			}
+
+			if (isset($this->fields[$option]['default'])) {
+				$default = $this->fields[$option]['default'];
 			}
 			
-			return get_option($option, $default);
-			/** @todo Need to test that the type index is set
-			switch($this->fields[$option]['type']) {
+			$type = (isset($this->fields[$option]['type']) ? $this->fields[$option]['type'] : '');
+			echo "Type is $type\n";
+			switch($type) {
 				case 'dimension':
-					return array(
-							get_option($option . '_w', $default[0]),
-							get_option($option . '_h', $default[1])
-					);
+					return $this->formatDimension(get_option($pOption . '_w', $default[0]));
 				default:
-					return get_option($option, $default);
-			}*/
+					return get_option($pOption, $default);
+			}
 		}
+
 		function __get($option) {
 			return $this->get_option($option);
 		}
