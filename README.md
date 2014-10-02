@@ -19,14 +19,13 @@ echo $settings->my_option;
 // Set option value
 $settings->my_option = 'new value';
 // Print the settings page
+$settings->printOptions();
+// Add a admin wordpress submenu for the options page
 add_submenu_page('myPlugin', 'My Plugin Options',
 		'Options', 'manage_options', 'myPluginOptions',
-		array(static::$settings, 'printOptions'));
+		array($settings, 'printOptions'));
 ```
 
-If the option `prefix` is set, the prefix will be prefixed to the start of the
-variable name used when getting or setting this way, e.g. if `prefix` is set to
-`gh_`, the above example would get and set the option `gh_my_option`.
 
 ## Use
 To use, simply include the WPSettings.php in your PHP script and create an
@@ -53,7 +52,14 @@ The following options are available (*bold* options are required):
   sections*.
 - `'useTabs'` - If true, each section will be separated into its own tab.
 
+If the option `prefix` is set, the prefix will be prefixed to the start of the
+option variable name in the wordpress options table.
+
 ### Sections (`$options['settings']`)
+
+Wordpress separates settings into sections. These sections can be used to
+group settings. If the `useTabs` option is set, the sections will be displayed
+in their own tab in the settings page.
 
 `$options['settings']` must contain an associative array of the different
 sections of settings. Each section should have a unique array key and be an
