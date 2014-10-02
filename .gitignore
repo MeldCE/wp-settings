@@ -1,7 +1,5 @@
 *~
 .*.sw?
-js/*.min.js
-css/*.min.css
 wp-settings.*.tgz
 wp-settings.*.zip
 wp-settings
