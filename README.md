@@ -13,11 +13,15 @@ You can get or set the value of any option as if it was a variable of the
 class. For example:
 
 ```
-$settings = WPSettings($options);
+$settings = new WPSettings($options);
 // Get option value
 echo $settings->my_option;
 // Set option value
 $settings->my_option = 'new value';
+// Print the settings page
+add_submenu_page('myPlugin', 'My Plugin Options',
+		'Options', 'manage_options', 'myPluginOptions',
+		array(static::$settings, 'printOptions'));
 ```
 
 If the option `prefix` is set, the prefix will be prefixed to the start of the
@@ -25,11 +29,11 @@ variable name used when getting or setting this way, e.g. if `prefix` is set to
 `gh_`, the above example would get and set the option `gh_my_option`.
 
 ## Use
-To use, simply include the WPSettings.php in your PHP script and call as in the
-example above.
+To use, simply include the WPSettings.php in your PHP script and create an
+instance of the WPSettings class as in the example above.
 
-You will also need to ensure that the javascript file `js/wpsetting.inc.js`
-is enqueued in the admin section.
+You can then use the created instance to access and set options and also print
+the settings page using the `printOptions` function as shown above.
 
 ## Specifying Settings
 
